@@ -152,6 +152,9 @@ def plot_images(images, labels_true, class_names, labels_pred=None):
             # Plot the image
             ax.imshow(images[i], interpolation='spline16')
 
+            print(class_names)
+            print(labels_true)
+            
             # Name of the true class
             labels_true_name = class_names[labels_true[i]]
 
