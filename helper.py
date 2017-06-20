@@ -36,6 +36,7 @@ def unpickle(file):
     
     # Convert byte stream to object
     with open(path + file,'rb') as fo:
+        print("Decoding file: %s" % (path+file))
         dict = pickle.load(fo, encoding='bytes')
         
     return dict
@@ -151,9 +152,6 @@ def plot_images(images, labels_true, class_names, labels_pred=None):
         if i < len(images):
             # Plot the image
             ax.imshow(images[i], interpolation='spline16')
-
-            print(class_names)
-            print(labels_true)
             
             # Name of the true class
             labels_true_name = class_names[labels_true[i]]
@@ -175,4 +173,61 @@ def plot_images(images, labels_true, class_names, labels_pred=None):
         ax.set_yticks([])
     
     # Show the plot
+    plt.show()
+    
+def visualize_errors(images_test, labels_test, class_names, labels_pred, correct):
+    
+    incorrect = (correct == False)
+    
+    # Images of the test-set that have been incorrectly classified.
+    images_error = images_test[incorrect]
+    
+    # Get predicted classes for those images
+    labels_error = labels_pred[incorrect]
+
+    # Get true classes for those images
+    labels_true = labels_test[incorrect]
+    
+    
+    # Plot the first 9 images.
+    plot_images(images=images_error[0:9],
+                labels_true=labels_true[0:9],
+                class_names=class_names,
+                labels_pred=labels_error[0:9])
+    
+    
+def predict_classes(model, images_test, labels_test):
+    
+    # Predict class of image using model
+    class_pred = model.predict(images_test, batch_size=32)
+
+    # Convert vector to a label
+    labels_pred = np.argmax(class_pred,axis=1)
+
+    # Boolean array that tell if predicted label is the true label
+    correct = (labels_pred == labels_test)
+
+    return correct, labels_pred
+
+def plot_model(model_details):
+    fig, axs = plt.subplots(1,2,figsize=(15,5))
+    
+    # summarize history for accuracy
+    axs[0].plot(range(1,len(model_details.history['acc'])+1),model_details.history['acc'])
+    axs[0].plot(range(1,len(model_details.history['val_acc'])+1),model_details.history['val_acc'])
+    axs[0].set_title('Model Accuracy')
+    axs[0].set_ylabel('Accuracy')
+    axs[0].set_xlabel('Epoch')
+    axs[0].set_xticks(np.arange(1,len(model_details.history['acc'])+1),len(model_details.history['acc'])/10)
+    axs[0].legend(['train', 'val'], loc='best')
+    
+    # summarize history for loss
+    axs[1].plot(range(1,len(model_details.history['loss'])+1),model_details.history['loss'])
+    axs[1].plot(range(1,len(model_details.history['val_loss'])+1),model_details.history['val_loss'])
+    axs[1].set_title('Model Loss')
+    axs[1].set_ylabel('Loss')
+    axs[1].set_xlabel('Epoch')
+    axs[1].set_xticks(np.arange(1,len(model_details.history['loss'])+1),len(model_details.history['loss'])/10)
+    axs[1].legend(['train', 'val'], loc='best')
+    
     plt.show()
