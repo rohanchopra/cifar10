@@ -1,11 +1,13 @@
 # CIFAR - 10
 
+# To decode the files
 import pickle
+# 
 import numpy as np
+# To make one-hot vectors
 from keras.utils import np_utils
+# To plot graphs and display images
 from matplotlib import pyplot as plt
-
-
 
 
 #constants
@@ -14,15 +16,16 @@ path = "data/"  # Path to data
 
 # Height or width of the images (32 x 32)
 size = 32 
+
 # 3 channels: Red, Green, Blue (RGB)
 channels = 3  
-# Size of flattened image
-size_flat = size * size * channels
 
+# Number of classes
 num_classes = 10 
 
 # Each file contains 10000 images
 image_batch = 10000 
+
 # 5 training files
 num_files_train = 5  
 
@@ -38,7 +41,8 @@ def unpickle(file):
     with open(path + file,'rb') as fo:
         print("Decoding file: %s" % (path+file))
         dict = pickle.load(fo, encoding='bytes')
-        
+       
+    # Dictionary with images and labels
     return dict
 
 
@@ -75,7 +79,7 @@ def load_data(file):
     # Convert class number to numpy array
     labels = np.array(data[b'labels'])
         
-    
+    # Images and labels in np array form
     return images, labels
 
 
@@ -86,6 +90,8 @@ def get_test_data():
     
     images, labels = load_data(file = "test_batch")
     
+    # Images, their labels and 
+    # corresponding one-hot vectors in form of np arrays
     return images, labels, np_utils.to_categorical(labels,num_classes)
 
 
@@ -117,6 +123,8 @@ def get_train_data():
         # Update starting index of next batch
         start = end
     
+    # Images, their labels and 
+    # corresponding one-hot vectors in form of np arrays
     return images, labels, np_utils.to_categorical(labels,num_classes)
         
 
@@ -129,6 +137,7 @@ def get_class_names():
     # Convert from binary strings
     names = [x.decode('utf-8') for x in raw]
 
+    # Class names
     return names
 
 
@@ -175,6 +184,35 @@ def plot_images(images, labels_true, class_names, labels_pred=None):
     # Show the plot
     plt.show()
     
+
+def plot_model(model_details):
+
+    # Create sub-plots
+    fig, axs = plt.subplots(1,2,figsize=(15,5))
+    
+    # Summarize history for accuracy
+    axs[0].plot(range(1,len(model_details.history['acc'])+1),model_details.history['acc'])
+    axs[0].plot(range(1,len(model_details.history['val_acc'])+1),model_details.history['val_acc'])
+    axs[0].set_title('Model Accuracy')
+    axs[0].set_ylabel('Accuracy')
+    axs[0].set_xlabel('Epoch')
+    axs[0].set_xticks(np.arange(1,len(model_details.history['acc'])+1),len(model_details.history['acc'])/10)
+    axs[0].legend(['train', 'val'], loc='best')
+    
+    # Summarize history for loss
+    axs[1].plot(range(1,len(model_details.history['loss'])+1),model_details.history['loss'])
+    axs[1].plot(range(1,len(model_details.history['val_loss'])+1),model_details.history['val_loss'])
+    axs[1].set_title('Model Loss')
+    axs[1].set_ylabel('Loss')
+    axs[1].set_xlabel('Epoch')
+    axs[1].set_xticks(np.arange(1,len(model_details.history['loss'])+1),len(model_details.history['loss'])/10)
+    axs[1].legend(['train', 'val'], loc='best')
+    
+    # Show the plot
+    plt.show()
+
+
+
 def visualize_errors(images_test, labels_test, class_names, labels_pred, correct):
     
     incorrect = (correct == False)
@@ -207,27 +245,8 @@ def predict_classes(model, images_test, labels_test):
     # Boolean array that tell if predicted label is the true label
     correct = (labels_pred == labels_test)
 
+    # Array which tells if the prediction is correct or not
+    # And predicted labels
     return correct, labels_pred
 
-def plot_model(model_details):
-    fig, axs = plt.subplots(1,2,figsize=(15,5))
-    
-    # summarize history for accuracy
-    axs[0].plot(range(1,len(model_details.history['acc'])+1),model_details.history['acc'])
-    axs[0].plot(range(1,len(model_details.history['val_acc'])+1),model_details.history['val_acc'])
-    axs[0].set_title('Model Accuracy')
-    axs[0].set_ylabel('Accuracy')
-    axs[0].set_xlabel('Epoch')
-    axs[0].set_xticks(np.arange(1,len(model_details.history['acc'])+1),len(model_details.history['acc'])/10)
-    axs[0].legend(['train', 'val'], loc='best')
-    
-    # summarize history for loss
-    axs[1].plot(range(1,len(model_details.history['loss'])+1),model_details.history['loss'])
-    axs[1].plot(range(1,len(model_details.history['val_loss'])+1),model_details.history['val_loss'])
-    axs[1].set_title('Model Loss')
-    axs[1].set_ylabel('Loss')
-    axs[1].set_xlabel('Epoch')
-    axs[1].set_xticks(np.arange(1,len(model_details.history['loss'])+1),len(model_details.history['loss'])/10)
-    axs[1].legend(['train', 'val'], loc='best')
-    
-    plt.show()
+
