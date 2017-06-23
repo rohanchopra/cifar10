@@ -32,7 +32,7 @@ num_files_train = 5
 # Total number of training images
 images_train = image_batch * num_files_train
 
-
+# https://www.cs.toronto.edu/~kriz/cifar.html
 
 
 def unpickle(file):  
