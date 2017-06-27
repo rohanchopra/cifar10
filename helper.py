@@ -2,7 +2,7 @@
 
 # To decode the files
 import pickle
-# 
+# For array manipulations
 import numpy as np
 # To make one-hot vectors
 from keras.utils import np_utils
